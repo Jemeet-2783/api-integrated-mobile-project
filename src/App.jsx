@@ -45,25 +45,68 @@ const BottomNav = ({ active }) => (
   </div>
 );
 
-const APIDataScreen = () => (
-  <MobileFrame>
-    <div className="home-header">
-      <h1>Weather API</h1>
-      <Cloud size={24} color="#6366f1" />
-    </div>
-    {[
-      { city: 'London', temp: '15°C', status: 'Cloudy', icon: Cloud },
-      { city: 'New York', temp: '22°C', status: 'Sunny', icon: Thermometer },
-      { city: 'Tokyo', temp: '18°C', status: 'Windy', icon: Wind }
-    ].map(item => (
-      <div className="api-card" key={item.city}>
-        <div className="api-icon"><item.icon size={24} /></div>
-        <div style={{ flex: 1 }}><h3>{item.city}</h3><p>{item.status}</p></div>
-        <div>{item.temp}</div>
+const APIDataScreen = () => {
+  const [users, setUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch data');
+        return res.json();
+      })
+      .then(data => {
+        setUsers(data.slice(0, 5)); // Just take first 5
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <MobileFrame>
+      <div className="home-header">
+        <h1>Users API</h1>
+        <div className="icon" style={{ background: '#eef2ff', padding: '10px', borderRadius: '12px' }}>
+          <User size={24} color="#6366f1" />
+        </div>
       </div>
-    ))}
-  </MobileFrame>
-);
+      <p className="subtitle">Live data from JSONPlaceholder</p>
+      
+      {loading ? (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
+          <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Fetching from API...</p>
+        </div>
+      ) : error ? (
+        <div style={{ padding: '20px', background: '#fef2f2', borderRadius: '16px', color: '#b91c1c', textAlign: 'center' }}>
+          <p>Error: {error}</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {users.map(user => (
+            <div className="api-card" key={user.id}>
+              <div className="api-icon" style={{ borderRadius: '50%' }}>
+                <div style={{ fontWeight: '700', fontSize: '18px' }}>{user.name.charAt(0)}</div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontSize: '15px' }}>{user.name}</h3>
+                <p style={{ fontSize: '12px', color: '#64748b' }}>{user.email}</p>
+              </div>
+              <ArrowRight size={16} color="#cbd5e1" />
+            </div>
+          ))}
+        </div>
+      )}
+      
+      <div style={{ marginTop: 'auto' }}><BottomNav active="home" /></div>
+    </MobileFrame>
+  );
+};
 
 const SettingsMenuScreen = () => (
   <MobileFrame>
