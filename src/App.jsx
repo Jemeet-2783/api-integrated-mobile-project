@@ -16,9 +16,6 @@ import {
   TrendingUp,
   CreditCard,
   LogOut,
-  Cloud,
-  Thermometer,
-  Wind,
   Smartphone,
   Info,
   HelpCircle
@@ -45,118 +42,192 @@ const BottomNav = ({ active }) => (
   </div>
 );
 
-const APIDataScreen = () => {
-  const [users, setUsers] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+const LoginScreen = () => {
+  const [formData, setFormData] = React.useState({ email: '', password: '' });
+  const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch data');
-        return res.json();
-      })
-      .then(data => {
-        setUsers(data.slice(0, 5)); // Just take first 5
+  const handleLogin = () => {
+    setError('');
+    if (!formData.email || !formData.password) { setError('Please fill in all fields'); return; }
+    setLoading(true);
+    setTimeout(() => {
+      if (formData.email !== 'admin@test.com' || formData.password !== '1234') {
+        setError('Invalid email or password.');
         setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+      } else { alert('Login Successful!'); setLoading(false); }
+    }, 1000);
+  };
 
   return (
     <MobileFrame>
-      <div className="home-header">
-        <h1>Users API</h1>
-        <div className="icon" style={{ background: '#eef2ff', padding: '10px', borderRadius: '12px' }}>
-          <User size={24} color="#6366f1" />
-        </div>
+      <div style={{ marginTop: '60px' }}>
+        <h1>Welcome Back</h1>
+        <p className="subtitle">Sign in to continue</p>
+        {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c', padding: '12px', borderRadius: '12px', fontSize: '13px', marginBottom: '20px' }}>{error}</div>}
+        <div className="input-group"><label>Email</label><input type="text" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="name@example.com" /></div>
+        <div className="input-group"><label>Password</label><input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} placeholder="••••••••" /></div>
+        <button className="btn-primary" onClick={handleLogin}>{loading ? 'Authenticating...' : 'Sign In'}</button>
+        <div className="login-footer">Don't have an account? <span>Sign Up</span></div>
       </div>
-      <p className="subtitle">Live data from JSONPlaceholder</p>
-      
-      {loading ? (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-          <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-          <p style={{ color: '#64748b', fontSize: '14px' }}>Fetching from API...</p>
+    </MobileFrame>
+  );
+};
+
+const RegistrationScreen = () => {
+  const [formData, setFormData] = React.useState({ username: '', email: '', password: '' });
+  const [errors, setErrors] = React.useState({});
+  const [success, setSuccess] = React.useState(false);
+
+  const handleSignup = () => {
+    const newErrors = {};
+    if (!formData.username) newErrors.username = 'Username is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  };
+
+  return (
+    <MobileFrame>
+      <div style={{ marginTop: '40px' }}>
+        <h1>Create Account</h1>
+        <p className="subtitle">Join our community</p>
+        <div className="input-group">
+          <label>Username</label>
+          <input type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} style={{ borderColor: errors.username ? '#ef4444' : '#e2e8f0' }} placeholder="johndoe123" />
         </div>
-      ) : error ? (
-        <div style={{ padding: '20px', background: '#fef2f2', borderRadius: '16px', color: '#b91c1c', textAlign: 'center' }}>
-          <p>Error: {error}</p>
+        <div className="input-group">
+          <label>Email</label>
+          <input type="text" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ borderColor: errors.email ? '#ef4444' : '#e2e8f0' }} placeholder="name@example.com" />
         </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {users.map(user => (
-            <div className="api-card" key={user.id}>
-              <div className="api-icon" style={{ borderRadius: '50%' }}>
-                <div style={{ fontWeight: '700', fontSize: '18px' }}>{user.name.charAt(0)}</div>
-              </div>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '15px' }}>{user.name}</h3>
-                <p style={{ fontSize: '12px', color: '#64748b' }}>{user.email}</p>
-              </div>
-              <ArrowRight size={16} color="#cbd5e1" />
-            </div>
-          ))}
+        <div className="input-group">
+          <label>Password</label>
+          <input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} style={{ borderColor: errors.password ? '#ef4444' : '#e2e8f0' }} placeholder="••••••••" />
         </div>
-      )}
-      
+        <button className="btn-primary" onClick={handleSignup}>{success ? 'Account Created!' : 'Register Now'}</button>
+        <div className="login-footer">Already have an account? <span>Sign In</span></div>
+      </div>
+    </MobileFrame>
+  );
+};
+
+const HomeScreen = () => {
+  const [favorites, setFavorites] = React.useState(() => JSON.parse(localStorage.getItem('favorites') || '[]'));
+  const products = [
+    { id: 1, name: 'Smart Watch', price: '$199', category: 'Gadgets', img: '/watch.png' },
+    { id: 2, name: 'Headphones', price: '$299', category: 'Audio', img: '/bali.png' }
+  ];
+  const toggleFav = (e, id) => {
+    e.stopPropagation();
+    const newFavs = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
+    setFavorites(newFavs);
+    localStorage.setItem('favorites', JSON.stringify(newFavs));
+  };
+  return (
+    <MobileFrame>
+      <div className="home-header">
+        <h2 style={{ fontSize: '20px', fontWeight: '800' }}>ShopGo</h2>
+        <Bell size={20} />
+      </div>
+      <div className="search-bar"><Search size={18} /><span>Search products...</span></div>
+      <div className="section-title"><h2>Items ({favorites.length} Saved)</h2></div>
+      {products.map(item => (
+        <div className="api-card" key={item.id} onClick={() => alert('View Details')}>
+          <div className="item-img" style={{ width: '60px', height: '60px', borderRadius: '12px', backgroundImage: `url(${item.img})` }}></div>
+          <div style={{ flex: 1 }}><h3>{item.name}</h3><p style={{ color: '#6366f1' }}>{item.price}</p></div>
+          <Heart size={20} fill={favorites.includes(item.id) ? '#ef4444' : 'none'} color={favorites.includes(item.id) ? '#ef4444' : '#cbd5e1'} onClick={(e) => toggleFav(e, item.id)} />
+        </div>
+      ))}
       <div style={{ marginTop: 'auto' }}><BottomNav active="home" /></div>
+    </MobileFrame>
+  );
+};
+
+const DetailScreen = () => (
+  <div className="mobile-frame">
+    <div className="detail-hero" style={{ backgroundImage: 'url("/watch.png")', height: '350px' }}>
+      <div className="back-btn" onClick={() => alert('Back')}><ChevronLeft size={20} /></div>
+    </div>
+    <div className="detail-content">
+      <h1 style={{ fontSize: '24px' }}>Smart Watch v4</h1>
+      <p style={{ color: '#64748b', marginTop: '12px' }}>Next-gen wearable tech with a vibrant Always-On display.</p>
+    </div>
+    <div className="detail-footer"><p style={{ fontSize: '20px', fontWeight: '800', color: '#6366f1' }}>$199.00</p><button className="btn-primary" style={{ marginTop: 0 }}>Buy Now</button></div>
+  </div>
+);
+
+const ProfileScreen = () => {
+  const [userName, setUserName] = React.useState(() => localStorage.getItem('user_name') || 'Alex Johnson');
+  const favCount = JSON.parse(localStorage.getItem('favorites') || '[]').length;
+  return (
+    <MobileFrame>
+      <div className="profile-header">
+        <div className="profile-img" style={{ backgroundImage: 'url("/profile.png")' }}></div>
+        <h2 onClick={() => { const n = prompt('New Name:', userName); if(n){setUserName(n); localStorage.setItem('user_name', n);}}}>{userName}</h2>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>Tap name to edit</p>
+      </div>
+      <div className="nav-item"><div className="icon"><Heart size={20} /></div><div style={{ flex: 1 }}>My Favorites ({favCount})</div></div>
+      <div style={{ marginTop: 'auto' }}><BottomNav active="profile" /></div>
+    </MobileFrame>
+  );
+};
+
+const APIDataScreen = () => {
+  const [users, setUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users').then(r => r.json()).then(d => { setUsers(d.slice(0, 3)); setLoading(false); });
+  }, []);
+  return (
+    <MobileFrame>
+      <h1>Users API</h1>
+      {loading ? <p>Loading...</p> : users.map(u => (
+        <div className="api-card" key={u.id}><h3>{u.name}</h3></div>
+      ))}
     </MobileFrame>
   );
 };
 
 const SettingsMenuScreen = () => (
   <MobileFrame>
-    <div style={{ marginTop: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-        <ChevronLeft size={24} />
-        <h1>Settings</h1>
-      </div>
-
-      <div className="settings-list">
-        {[
-          { icon: User, label: 'Profile Settings', sub: 'Change name, photo, and bio' },
-          { icon: Smartphone, label: 'App Theme', sub: 'Light, Dark, and System modes' },
-          { icon: LogOut, label: 'Logout', sub: 'Securely sign out of your account' }
-        ].map((item, index) => (
-          <div className="settings-item" key={index} style={{ gap: '16px', cursor: 'pointer' }} onClick={() => alert(`Opening ${item.label}...`)}>
-            <div className="api-icon" style={{ width: '40px', height: '40px' }}><item.icon size={20} /></div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: '600', fontSize: '15px' }}>{item.label}</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>{item.sub}</div>
-            </div>
-            <ArrowRight size={18} color="#cbd5e1" />
-          </div>
-        ))}
-      </div>
+    <h1>Settings</h1>
+    <div className="settings-list">
+      {[{ icon: User, label: 'Profile' }, { icon: Smartphone, label: 'Theme' }, { icon: LogOut, label: 'Logout' }].map((item, i) => (
+        <div className="settings-item" key={i}><item.icon size={20} /><span>{item.label}</span><ArrowRight size={18} /></div>
+      ))}
     </div>
-    <div style={{ marginTop: 'auto' }}><BottomNav active="profile" /></div>
   </MobileFrame>
 );
+
+const SettingsDetailScreen = () => {
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [notif, setNotif] = React.useState(true);
+  return (
+    <MobileFrame>
+      <h1>Preferences</h1>
+      <div className="settings-item"><span>Notifications</span><div className={`switch ${notif ? 'active' : ''}`} onClick={() => setNotif(!notif)}></div></div>
+      <button className="btn-primary" onClick={() => { setIsSaving(true); setTimeout(() => { setIsSaving(false); alert('Saved!'); }, 1000); }}>
+        {isSaving ? 'Saving...' : 'Save Settings'}
+      </button>
+    </MobileFrame>
+  );
+};
 
 const NotificationScreen = () => (
   <MobileFrame>
     <h1>Notifications</h1>
-    {[
-      { title: 'New Trip Alert', msg: 'Someone liked your photo!', time: '2m ago' },
-      { title: 'System Update', msg: 'Version 2.4 is out', time: '1h ago' }
-    ].map((item, i) => (
-      <div className="notif-item" key={i}>
-        <div className="notif-content"><b>{item.title}</b><p>{item.msg}</p><span>{item.time}</span></div>
-      </div>
-    ))}
+    <div className="notif-item"><b>New Alert</b><p>Trip liked!</p></div>
   </MobileFrame>
 );
 
 function App() {
   return (
     <div className="showcase-grid">
-      <APIDataScreen />
-      <SettingsMenuScreen />
-      <NotificationScreen />
+      <LoginScreen /><RegistrationScreen /><HomeScreen /><DetailScreen /><ProfileScreen /><APIDataScreen /><SettingsMenuScreen /><SettingsDetailScreen /><NotificationScreen />
     </div>
   );
 }
