@@ -110,20 +110,30 @@ const APIDataScreen = () => {
 
 const SettingsMenuScreen = () => (
   <MobileFrame>
-    <h1>Settings</h1>
-    <div className="settings-list">
-      {[
-        { icon: User, label: 'Account', sub: 'Privacy, Security' },
-        { icon: Lock, label: 'Privacy', sub: 'Control who sees profile' },
-        { icon: Bell, label: 'Notifications', sub: 'Alert tones' }
-      ].map((item, index) => (
-        <div className="settings-item" key={index}>
-          <div className="api-icon" style={{ width: '40px', height: '40px' }}><item.icon size={20} /></div>
-          <div style={{ flex: 1 }}><b>{item.label}</b><p>{item.sub}</p></div>
-          <ArrowRight size={18} />
-        </div>
-      ))}
+    <div style={{ marginTop: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+        <ChevronLeft size={24} />
+        <h1>Settings</h1>
+      </div>
+
+      <div className="settings-list">
+        {[
+          { icon: User, label: 'Profile Settings', sub: 'Change name, photo, and bio' },
+          { icon: Smartphone, label: 'App Theme', sub: 'Light, Dark, and System modes' },
+          { icon: LogOut, label: 'Logout', sub: 'Securely sign out of your account' }
+        ].map((item, index) => (
+          <div className="settings-item" key={index} style={{ gap: '16px', cursor: 'pointer' }} onClick={() => alert(`Opening ${item.label}...`)}>
+            <div className="api-icon" style={{ width: '40px', height: '40px' }}><item.icon size={20} /></div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: '600', fontSize: '15px' }}>{item.label}</div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>{item.sub}</div>
+            </div>
+            <ArrowRight size={18} color="#cbd5e1" />
+          </div>
+        ))}
+      </div>
     </div>
+    <div style={{ marginTop: 'auto' }}><BottomNav active="profile" /></div>
   </MobileFrame>
 );
 
