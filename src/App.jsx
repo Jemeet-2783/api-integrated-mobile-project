@@ -217,12 +217,40 @@ const SettingsDetailScreen = () => {
   );
 };
 
-const NotificationScreen = () => (
-  <MobileFrame>
-    <h1>Notifications</h1>
-    <div className="notif-item"><b>New Alert</b><p>Trip liked!</p></div>
-  </MobileFrame>
-);
+const NotificationScreen = () => {
+  const [notifs, setNotifs] = React.useState([
+    { title: 'New Alert', msg: 'Trip liked!', time: '2m ago' }
+  ]);
+
+  const triggerTest = () => {
+    alert('🔔 New Notification Received!');
+    const newNotif = { 
+      title: 'Demo Notification', 
+      msg: 'This is a test notification trigger.', 
+      time: 'Just now' 
+    };
+    setNotifs([newNotif, ...notifs]);
+  };
+
+  return (
+    <MobileFrame>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h1>Notifications</h1>
+        <button onClick={triggerTest} style={{ fontSize: '10px', padding: '6px 12px', background: '#6366f1', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Test Trigger</button>
+      </div>
+      
+      {notifs.map((item, i) => (
+        <div className="notif-item" key={i} style={{ marginBottom: '16px' }}>
+          <div>
+            <b style={{ display: 'block' }}>{item.title}</b>
+            <p style={{ margin: '4px 0', color: '#64748b' }}>{item.msg}</p>
+            <span style={{ fontSize: '12px', color: '#94a3b8' }}>{item.time}</span>
+          </div>
+        </div>
+      ))}
+    </MobileFrame>
+  );
+};
 
 function App() {
   return (
